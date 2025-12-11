@@ -32,17 +32,8 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
           <img
             src={pkg.image}
             alt={pkg.name}
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:scale-105 transition-all duration-500"
-            onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
-            onError={(e) => e.currentTarget.style.display = 'none'}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
           />
-          <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">
-            {pkg.category === 'jeep' && '🚙'}
-            {pkg.category === 'penginapan' && '🏨'}
-            {pkg.category === 'penjemputan' && '✈️'}
-            {pkg.category === 'makan' && '🍱'}
-            {pkg.category === 'dokumentasi' && '📸'}
-          </div>
           {pkg.popular && (
             <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-golden text-accent-foreground text-xs font-semibold flex items-center gap-1 z-10">
               <Star className="h-3 w-3 fill-current" />
