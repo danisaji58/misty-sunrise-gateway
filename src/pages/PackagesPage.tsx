@@ -4,6 +4,7 @@ import { PackageCard } from '@/components/PackageCard';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
+import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 
 const PackagesPage = () => {
   const { category } = useParams<{ category: string }>();
@@ -15,20 +16,12 @@ const PackagesPage = () => {
       <Navbar />
       <CartSidebar />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-secondary/50 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-5xl mb-4 block">{categoryInfo?.icon}</span>
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              {categoryInfo?.name || 'Paket'}
-            </h1>
-            <p className="text-muted-foreground">
-              {categoryInfo?.description || 'Pilih paket terbaik untuk perjalanan Bromo Anda'}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Page Header Banner */}
+      <PageHeaderBanner
+        title={categoryInfo?.name || 'Paket'}
+        subtitle={categoryInfo?.bannerSubtitle || categoryInfo?.description || 'Pilih paket terbaik untuk perjalanan Bromo Anda'}
+        image={categoryInfo?.bannerImage || '/images/hero-bromo.jpg'}
+      />
 
       {/* Packages Grid */}
       <section className="py-12">

@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
 import { Package } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Check, Star } from 'lucide-react';
+import { ShoppingCart, Check, Star, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/whatsapp';
 import { toast } from '@/hooks/use-toast';
@@ -13,7 +14,9 @@ interface PackageCardProps {
 export const PackageCard = ({ pkg }: PackageCardProps) => {
   const { addItem } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addItem(pkg);
     toast({
       title: 'Ditambahkan ke keranjang!',
@@ -22,63 +25,77 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden h-full flex flex-col">
-      {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-mist to-secondary overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">
-          {pkg.category === 'jeep' && '🚙'}
-          {pkg.category === 'penginapan' && '🏨'}
-          {pkg.category === 'penjemputan' && '✈️'}
-          {pkg.category === 'makan' && '🍱'}
-          {pkg.category === 'dokumentasi' && '📸'}
-        </div>
-        {pkg.popular && (
-          <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-golden text-accent-foreground text-xs font-semibold flex items-center gap-1">
-            <Star className="h-3 w-3 fill-current" />
-            Popular
+    <Link to={`/package/${pkg.id}`}>
+      <Card className="group overflow-hidden h-full flex flex-col hover:shadow-medium transition-all duration-300">
+        {/* Image */}
+        <div className="relative h-48 bg-gradient-to-br from-mist to-secondary overflow-hidden">
+          <img
+            src={pkg.image}
+            alt={pkg.name}
+            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:scale-105 transition-all duration-500"
+            onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+            onError={(e) => e.currentTarget.style.display = 'none'}
+          />
+          <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">
+            {pkg.category === 'jeep' && '🚙'}
+            {pkg.category === 'penginapan' && '🏨'}
+            {pkg.category === 'penjemputan' && '✈️'}
+            {pkg.category === 'makan' && '🍱'}
+            {pkg.category === 'dokumentasi' && '📸'}
           </div>
-        )}
-      </div>
-
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
-            {pkg.name}
-          </h3>
+          {pkg.popular && (
+            <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-golden text-accent-foreground text-xs font-semibold flex items-center gap-1 z-10">
+              <Star className="h-3 w-3 fill-current" />
+              Popular
+            </div>
+          )}
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {pkg.description}
-        </p>
-      </CardHeader>
 
-      <CardContent className="flex-grow">
-        {pkg.features && (
-          <ul className="space-y-1.5">
-            {pkg.features.slice(0, 4).map((feature, index) => (
-              <li
-                key={index}
-                className="flex items-center gap-2 text-sm text-muted-foreground"
-              >
-                <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span className="line-clamp-1">{feature}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-
-      <CardFooter className="flex items-center justify-between border-t border-border/50 pt-4">
-        <div>
-          <span className="text-xs text-muted-foreground">Mulai dari</span>
-          <p className="text-lg font-bold text-primary">
-            {formatPrice(pkg.price)}
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-display font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
+              {pkg.name}
+            </h3>
+          </div>
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {pkg.description}
           </p>
-        </div>
-        <Button size="sm" onClick={handleAddToCart} className="gap-2">
-          <ShoppingCart className="h-4 w-4" />
-          Tambah
-        </Button>
-      </CardFooter>
-    </Card>
+        </CardHeader>
+
+        <CardContent className="flex-grow">
+          {pkg.features && (
+            <ul className="space-y-1.5">
+              {pkg.features.slice(0, 4).map((feature, index) => (
+                <li
+                  key={index}
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
+                >
+                  <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="line-clamp-1">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+
+        <CardFooter className="flex items-center justify-between border-t border-border/50 pt-4">
+          <div>
+            <span className="text-xs text-muted-foreground">Mulai dari</span>
+            <p className="text-lg font-bold text-primary">
+              {formatPrice(pkg.price)}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleAddToCart} className="gap-1">
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            <Button size="sm" className="gap-1">
+              Detail
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 };

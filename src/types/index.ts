@@ -7,8 +7,15 @@ export interface Package {
   price: number;
   category: CategoryType;
   image: string;
+  images?: string[];
   features?: string[];
   popular?: boolean;
+  duration?: string;
+  itinerary?: string[];
+  includes?: string[];
+  excludes?: string[];
+  meetingPoint?: string;
+  notes?: string;
 }
 
 export interface CartItem {
@@ -30,4 +37,15 @@ export interface Category {
   name: string;
   description: string;
   icon: string;
+  bannerImage: string;
+  bannerSubtitle: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  origin: string;
+  comment: string;
+  rating: number;
+  avatar: string;
 }

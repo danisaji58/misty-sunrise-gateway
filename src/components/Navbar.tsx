@@ -47,7 +47,7 @@ export const Navbar = () => {
               isScrolled || !isHomePage ? 'text-foreground' : 'text-primary-foreground'
             )}
           >
-            Bromo Travel
+            AjiraBromo
           </span>
         </Link>
 
