@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
+import heroBromo from '@/assets/hero-bromo.jpg';
 
 export const Hero = () => {
   const scrollToCategories = () => {
@@ -12,7 +13,7 @@ export const Hero = () => {
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(/images/hero-bromo.jpg)` }}
+        style={{ backgroundImage: `url(${heroBromo})` }}
       >
         <div className="absolute inset-0 gradient-hero" />
       </div>
