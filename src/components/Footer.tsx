@@ -21,7 +21,7 @@ export const Footer = () => {
               size="xl"
               variant="sunrise"
               className="gap-2"
-              onClick={() => window.open('https://wa.me/6281234567890?text=Halo, saya tertarik dengan paket Bromo Travel!', '_blank')}
+              onClick={() => window.open('https://wa.me/6281234567890?text=Halo, saya tertarik dengan paket AjiraBromo!', '_blank')}
             >
               <MessageCircle className="h-5 w-5" />
               Chat WhatsApp
@@ -37,7 +37,7 @@ export const Footer = () => {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🌄</span>
-              <span className="text-xl font-display font-bold">Bromo Travel</span>
+              <span className="text-xl font-display font-bold">AjiraBromo</span>
             </Link>
             <p className="text-sm text-background/60 mb-4">
               One gate solution when you traveling to Bromo. Jeep, penginapan, 
@@ -117,7 +117,7 @@ export const Footer = () => {
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-sm text-background/60">
-                  hello@bromotravel.id
+                  hello@ajirabromo.id
                 </span>
               </li>
             </ul>
@@ -127,7 +127,7 @@ export const Footer = () => {
         {/* Copyright */}
         <div className="border-t border-background/10 mt-12 pt-8 text-center">
           <p className="text-sm text-background/40">
-            © {currentYear} Bromo Travel. All rights reserved.
+            © {currentYear} AjiraBromo. All rights reserved.
           </p>
         </div>
       </div>

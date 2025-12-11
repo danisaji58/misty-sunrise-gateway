@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "name": "Andi Pratama",
+    "origin": "Jakarta",
+    "comment": "Pelayanan luar biasa! Jeep-nya bagus, driver-nya ramah dan sangat informatif tentang sejarah Bromo. Sunrise-nya spektakuler!",
+    "rating": 5,
+    "avatar": "/images/avatar-1.jpg"
+  },
+  {
+    "id": "2",
+    "name": "Sarah Mitchell",
+    "origin": "Australia",
+    "comment": "Amazing experience! The whole trip was well organized. The picnic breakfast with sunrise view was unforgettable. Highly recommended!",
+    "rating": 5,
+    "avatar": "/images/avatar-2.jpg"
+  },
+  {
+    "id": "3",
+    "name": "Budi Santoso",
+    "origin": "Surabaya",
+    "comment": "Sudah 3x pakai AjiraBromo, selalu puas. Harga bersaing, pelayanan konsisten bagus. Penjemputan tepat waktu!",
+    "rating": 5,
+    "avatar": "/images/avatar-3.jpg"
+  },
+  {
+    "id": "4",
+    "name": "Maria Chen",
+    "origin": "Singapore",
+    "comment": "Professional service from start to finish. The villa was cozy with stunning mountain views. Will definitely come back!",
+    "rating": 5,
+    "avatar": "/images/avatar-4.jpg"
+  },
+  {
+    "id": "5",
+    "name": "Dewi Kusuma",
+    "origin": "Bandung",
+    "comment": "Paket dokumentasinya keren banget! Fotografernya profesional, hasil foto dan video-nya cinematic. Worth every penny!",
+    "rating": 5,
+    "avatar": "/images/avatar-5.jpg"
+  }
+]

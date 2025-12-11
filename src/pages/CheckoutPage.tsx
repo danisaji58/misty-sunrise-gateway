@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
+import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 import { useCart } from '@/context/CartContext';
 import { formatPrice, openWhatsApp } from '@/utils/whatsapp';
 import { CheckoutForm } from '@/types';
@@ -15,7 +16,6 @@ import {
   Globe, 
   Briefcase,
   MessageCircle,
-  ArrowLeft,
   Trash2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -92,17 +92,15 @@ const CheckoutPage = () => {
       <Navbar />
       <CartSidebar />
 
-      <section className="pt-32 pb-20">
-        <div className="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            className="mb-6 gap-2"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Kembali
-          </Button>
+      {/* Page Header Banner */}
+      <PageHeaderBanner
+        title="Checkout"
+        subtitle="Lengkapi data pemesanan dan kirim pesanan via WhatsApp"
+        image="/images/hero-bromo.jpg"
+      />
 
+      <section className="py-12">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2">
