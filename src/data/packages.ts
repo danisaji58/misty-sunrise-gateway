@@ -25,7 +25,26 @@ import {
   bannerPenjemputan,
   bannerMakan,
   bannerDokumentasi,
+  catJeep,
+  catPenginapan,
+  catPenjemputan,
+  catMakan,
+  catDokumentasi,
 } from '@/assets/images';
+
+// Pickup locations data
+export const pickupLocations = {
+  surabaya: [
+    { id: 'gubeng', name: 'Stasiun Gubeng', area: 'Surabaya' },
+    { id: 'pasar-turi', name: 'Stasiun Pasar Turi', area: 'Surabaya' },
+    { id: 'juanda', name: 'Bandara Juanda', area: 'Surabaya' },
+  ],
+  malang: [
+    { id: 'kota-baru', name: 'Stasiun Kota Baru', area: 'Malang' },
+    { id: 'kota-lama', name: 'Stasiun Kota Lama', area: 'Malang' },
+    { id: 'abdurrahman-saleh', name: 'Bandara Abdurrahman Saleh', area: 'Malang' },
+  ],
+};
 
 export const categories: Category[] = [
   {
@@ -33,6 +52,7 @@ export const categories: Category[] = [
     name: 'Paket Jeep',
     description: 'Jelajahi Bromo dengan jeep 4x4 yang tangguh',
     icon: '🚙',
+    image: catJeep,
     bannerImage: bannerJeep,
     bannerSubtitle: 'Petualangan seru dengan jeep 4x4 menuju keindahan Bromo',
   },
@@ -41,6 +61,7 @@ export const categories: Category[] = [
     name: 'Penginapan',
     description: 'Villa, hotel, dan homestay nyaman',
     icon: '🏨',
+    image: catPenginapan,
     bannerImage: bannerPenginapan,
     bannerSubtitle: 'Tempat istirahat nyaman dengan pemandangan gunung',
   },
@@ -49,6 +70,7 @@ export const categories: Category[] = [
     name: 'Penjemputan',
     description: 'Antar jemput bandara & stasiun',
     icon: '✈️',
+    image: catPenjemputan,
     bannerImage: bannerPenjemputan,
     bannerSubtitle: 'Layanan antar jemput terpercaya dari bandara dan stasiun',
   },
@@ -57,6 +79,7 @@ export const categories: Category[] = [
     name: 'Makan',
     description: 'Paket sarapan, snack, dan picnic',
     icon: '🍱',
+    image: catMakan,
     bannerImage: bannerMakan,
     bannerSubtitle: 'Nikmati kuliner lezat di tengah keindahan alam Bromo',
   },
@@ -65,6 +88,7 @@ export const categories: Category[] = [
     name: 'Dokumentasi',
     description: 'Foto & video profesional',
     icon: '📸',
+    image: catDokumentasi,
     bannerImage: bannerDokumentasi,
     bannerSubtitle: 'Abadikan momen berharga dengan fotografer profesional',
   },
@@ -252,6 +276,7 @@ export const packages: Package[] = [
     images: [carAvanza, carInnova, carHiace],
     features: ['Kapasitas 6 orang', 'AC', 'Bagasi luas', 'BBM irit'],
     popular: true,
+    capacity: '6 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan sesuai jadwal penerbangan/kereta',
@@ -273,6 +298,7 @@ export const packages: Package[] = [
     images: [carInnova, carAvanza, carFortuner],
     features: ['Kapasitas 6 orang', 'AC double blower', 'Suspensi nyaman', 'Premium'],
     popular: true,
+    capacity: '6 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan sesuai jadwal',
@@ -293,6 +319,7 @@ export const packages: Package[] = [
     image: carHiace,
     images: [carHiace, carElf, carInnova],
     features: ['Kapasitas 12-14 orang', 'AC', 'Bagasi super luas', 'Kursi captain seat'],
+    capacity: '12-14 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan rombongan',
@@ -313,6 +340,7 @@ export const packages: Package[] = [
     image: carElf,
     images: [carElf, carHiace, carAvanza],
     features: ['Kapasitas 16-19 orang', 'AC', 'Reclining seat', 'Entertainment'],
+    capacity: '16-19 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan grup dari meeting point',
@@ -333,6 +361,7 @@ export const packages: Package[] = [
     image: carPajero,
     images: [carPajero, carFortuner, carInnova],
     features: ['Kapasitas 5 orang', '4x4 AWD', 'Premium interior', 'VIP service'],
+    capacity: '5 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan VIP',
@@ -353,6 +382,7 @@ export const packages: Package[] = [
     image: carFortuner,
     images: [carFortuner, carPajero, carInnova],
     features: ['Kapasitas 6 orang', 'AC digital', 'Premium', 'Diesel powerful'],
+    capacity: '6 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan dari lokasi',
@@ -373,6 +403,7 @@ export const packages: Package[] = [
     image: carJeep,
     images: [carJeep, carPajero, carFortuner],
     features: ['Kapasitas 4 orang', '4x4 off-road', 'Open top option', 'Adventure style'],
+    capacity: '4 orang',
     duration: '3-4 jam perjalanan',
     itinerary: [
       'Penjemputan adventure style',
@@ -480,57 +511,56 @@ export const packages: Package[] = [
     category: 'dokumentasi',
     image: fotoPremium,
     images: [fotoPremium, fotoBasic, prewedding],
-    features: ['50 foto edit', 'Video 3 menit', 'Drone shot', 'Soft copy'],
+    features: ['50 foto edit', 'Video 3-5 menit', 'Drone shot', 'Same day preview'],
     popular: true,
     duration: 'Selama tour (4-6 jam)',
     itinerary: [
-      'Fotografer + videografer join tour',
-      'Foto di semua spot',
-      'Drone aerial shots',
-      'Video cinematic moments',
-      'Editing 5-7 hari',
-      'Deliver via Google Drive',
+      'Fotografer & videografer join dari start',
+      'Foto & video di semua spot',
+      'Drone shot di lokasi strategis',
+      'Same day preview (5 foto)',
+      'Full delivery 5-7 hari',
     ],
-    includes: ['Fotografer + videografer', '50 foto edit HD', 'Video cinematic 3 menit', 'Drone shots (5-10 aerial)', 'Color grading', 'Background music licensed'],
-    excludes: ['Print', 'Album fisik', 'Raw files', 'Extended video'],
-    meetingPoint: 'Ikut rombongan dari penginapan',
-    notes: 'Drone tergantung kondisi cuaca & izin terbang. Hasil 5-7 hari kerja.',
+    includes: ['Fotografer + videografer', '50 foto edit (high resolution)', 'Video cinematic 3-5 menit', 'Drone shot', 'Same day preview 5 foto', 'Soft copy semua file'],
+    excludes: ['Print foto', 'Album', 'Extended video'],
+    meetingPoint: 'Ikut dengan rombongan tour',
+    notes: 'Paket terlengkap untuk dokumentasi. Drone tergantung cuaca dan izin lokasi.',
   },
   {
-    id: 'prewedding',
+    id: 'foto-prewedding',
     name: 'Prewedding Package',
-    description: 'Paket khusus foto prewedding di Bromo.',
+    description: 'Paket foto prewedding profesional di Bromo.',
     price: 2500000,
     category: 'dokumentasi',
     image: prewedding,
     images: [prewedding, fotoPremium, fotoBasic],
-    features: ['100 foto edit', 'Video cinematic', 'Drone', 'All spot', 'MUA available'],
+    features: ['100 foto edit', 'Video teaser', '3 lokasi', 'MUA available'],
     duration: 'Full day (8-10 jam)',
     itinerary: [
-      '02:00 - MUA mulai makeup',
-      '04:00 - Berangkat ke View Point',
-      '05:00 - Sesi sunrise (outfit 1)',
-      '07:00 - Kawah Bromo (outfit 2)',
-      '09:00 - Pasir Berbisik & Savana',
-      '11:00 - Istirahat + ganti outfit',
-      '13:00 - Sesi sore (jika diperlukan)',
+      '03:00 - Makeup & persiapan',
+      '04:30 - Berangkat ke lokasi sunrise',
+      '05:30 - Sesi foto sunrise',
+      '07:00 - Pindah lokasi (Kawah/Savana)',
+      '09:00 - Sesi foto lokasi 2',
+      '11:00 - Break & ganti outfit',
+      '13:00 - Sesi foto lokasi 3',
       '15:00 - Selesai',
     ],
-    includes: ['Tim foto + video (2 orang)', '100 foto edit premium', 'Video cinematic 5 menit', 'Drone unlimited', 'All spot Bromo', 'Soft copy HD', 'MUA (optional +500rb)'],
-    excludes: ['Album cetak', 'Wardrobe', 'Transport tamu', 'Akomodasi tim'],
-    meetingPoint: 'Hotel/villa di area Bromo',
-    notes: 'Booking minimal 2 minggu sebelumnya. DP 50% untuk konfirmasi. Reschedule gratis jika cuaca buruk.',
+    includes: ['Fotografer senior', 'Videografer', '100 foto edit premium', 'Video teaser 1 menit', 'Drone shot', '3 lokasi foto', 'Asisten fotografer'],
+    excludes: ['MUA (bisa add-on)', 'Wardrobe', 'Transportasi', 'Cetak foto'],
+    meetingPoint: 'Penginapan / lokasi MUA',
+    notes: 'Booking minimal 2 minggu sebelumnya. Include konsultasi konsep. MUA tersedia dengan biaya tambahan.',
   },
 ];
 
-export const getPackagesByCategory = (category: string) => {
-  return packages.filter((pkg) => pkg.category === category);
+export const getPackagesByCategory = (categoryId: string): Package[] => {
+  return packages.filter((pkg) => pkg.category === categoryId);
 };
 
-export const getPopularPackages = () => {
+export const getPopularPackages = (): Package[] => {
   return packages.filter((pkg) => pkg.popular);
 };
 
-export const getPackageById = (id: string) => {
+export const getPackageById = (id: string): Package | undefined => {
   return packages.find((pkg) => pkg.id === id);
 };
