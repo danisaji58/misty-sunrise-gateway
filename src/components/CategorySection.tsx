@@ -27,16 +27,24 @@ export const CategorySection = () => {
               className="animate-fade-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <Card className="h-full p-6 text-center group cursor-pointer hover:border-primary/30 hover:-translate-y-1">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {category.icon}
+              <Card className="h-full overflow-hidden group cursor-pointer hover:border-primary/30 hover:-translate-y-1 transition-all duration-300">
+                {/* Category Image */}
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {category.name}
-                </h3>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {category.description}
-                </p>
+                {/* Category Info */}
+                <div className="p-4 text-center">
+                  <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                    {category.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {category.description}
+                  </p>
+                </div>
               </Card>
             </Link>
           ))}

@@ -37,3 +37,18 @@ export { default as bannerDokumentasi } from './banner-dokumentasi.jpg';
 
 // Hero
 export { default as heroBromo } from '../hero-bromo.jpg';
+
+// Category images
+export { default as catJeep } from '../categories/cat-jeep.jpg';
+export { default as catPenginapan } from '../categories/cat-penginapan.jpg';
+export { default as catPenjemputan } from '../categories/cat-penjemputan.jpg';
+export { default as catMakan } from '../categories/cat-makan.jpg';
+export { default as catDokumentasi } from '../categories/cat-dokumentasi.jpg';
+
+// Feature images
+export { default as featGuide } from '../features/feat-guide.jpg';
+export { default as featWhatsapp } from '../features/feat-whatsapp.jpg';
+export { default as featPrice } from '../features/feat-price.jpg';
+export { default as featSchedule } from '../features/feat-schedule.jpg';
+export { default as featDriver } from '../features/feat-driver.jpg';
+export { default as featGroup } from '../features/feat-group.jpg';

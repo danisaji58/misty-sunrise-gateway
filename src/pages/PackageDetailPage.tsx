@@ -1,42 +1,38 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPackageById, categories } from '@/data/packages';
+import { getPackageById, getPackagesByCategory, categories, pickupLocations } from '@/data/packages';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
-import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/whatsapp';
 import { toast } from '@/hooks/use-toast';
-import {
-  Clock,
-  MapPin,
-  Check,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  ShoppingCart,
-  ArrowRight,
-  AlertCircle,
-} from 'lucide-react';
 
 const PackageDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   const pkg = id ? getPackageById(id) : null;
   const categoryInfo = pkg ? categories.find((c) => c.id === pkg.category) : null;
+  
+  // Get variants (other packages in same category)
+  const variants = pkg ? getPackagesByCategory(pkg.category).filter(p => p.id !== pkg.id) : [];
 
   if (!pkg) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-32 pb-20 text-center">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="h-32 w-32 mx-auto mb-6 rounded-2xl overflow-hidden bg-secondary flex items-center justify-center">
+            <span className="text-4xl text-muted-foreground">?</span>
+          </div>
           <h1 className="text-2xl font-bold mb-4">Paket tidak ditemukan</h1>
           <Button onClick={() => navigate('/')}>Kembali ke Beranda</Button>
         </div>
@@ -48,43 +44,34 @@ const PackageDetailPage = () => {
   const images = pkg.images || [pkg.image];
 
   const handleAddToCart = () => {
-    addItem(pkg);
+    for (let i = 0; i < quantity; i++) {
+      addItem(pkg);
+    }
     toast({
       title: 'Ditambahkan ke keranjang!',
-      description: `${pkg.name} berhasil ditambahkan.`,
+      description: `${quantity}x ${pkg.name} berhasil ditambahkan.`,
     });
   };
 
   const handleCheckout = () => {
-    addItem(pkg);
+    for (let i = 0; i < quantity; i++) {
+      addItem(pkg);
+    }
     navigate('/checkout');
   };
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  const isPenjemputan = pkg.category === 'penjemputan';
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <CartSidebar />
 
-      {/* Banner */}
-      <PageHeaderBanner
-        title={pkg.name}
-        subtitle={pkg.description}
-        image={pkg.image}
-      />
-
-      {/* Content */}
-      <section className="py-12">
+      {/* Main Content */}
+      <main className="pt-20 pb-32 lg:pb-12">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground py-4 flex-wrap">
             <button onClick={() => navigate('/')} className="hover:text-primary transition-colors">
               Beranda
             </button>
@@ -96,123 +83,143 @@ const PackageDetailPage = () => {
             <span className="text-foreground">{pkg.name}</span>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Image Gallery */}
-            <div className="space-y-4">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-secondary">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            {/* Left Column - Images */}
+            <div className="lg:col-span-5 mb-6 lg:mb-0">
+              {/* Main Image */}
+              <div className="aspect-square rounded-2xl overflow-hidden bg-secondary mb-3">
                 <img
                   src={images[currentImageIndex]}
                   alt={pkg.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
                 />
-                
-                {images.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors shadow-medium"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors shadow-medium"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </>
-                )}
-
-                {/* Image Counter */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm text-sm font-medium">
-                  {currentImageIndex + 1} / {images.length}
-                </div>
               </div>
 
-              {/* Thumbnails */}
-              {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`shrink-0 h-20 w-20 rounded-xl overflow-hidden border-2 transition-all ${
-                        idx === currentImageIndex
-                          ? 'border-primary'
-                          : 'border-transparent opacity-60 hover:opacity-100'
-                      }`}
-                    >
-                      <img
-                        src={img}
-                        alt={`${pkg.name} ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
+              {/* Thumbnail Gallery */}
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`shrink-0 h-16 w-16 md:h-20 md:w-20 rounded-xl overflow-hidden border-2 transition-all ${
+                      idx === currentImageIndex
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-transparent opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${pkg.name} ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Details */}
-            <div className="space-y-6">
-              {/* Price & Duration */}
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="text-3xl md:text-4xl font-bold text-primary">
+            {/* Middle Column - Details */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Title & Price */}
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2">{pkg.name}</h1>
+                <div className="text-3xl font-bold text-primary">
                   {formatPrice(pkg.price)}
+                  {pkg.capacity && (
+                    <span className="text-base font-normal text-muted-foreground ml-2">
+                      / {pkg.capacity}
+                    </span>
+                  )}
                 </div>
                 {pkg.duration && (
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-sm">
-                    <Clock className="h-4 w-4 text-primary" />
+                  <div className="inline-block mt-2 px-3 py-1 rounded-full bg-secondary text-sm">
                     {pkg.duration}
                   </div>
                 )}
               </div>
 
-              {/* Meeting Point */}
-              {pkg.meetingPoint && (
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50">
-                  <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground">Meeting Point</div>
-                    <div className="font-medium">{pkg.meetingPoint}</div>
+              {/* Description */}
+              <p className="text-muted-foreground">{pkg.description}</p>
+
+              {/* Variant Selection with Photos */}
+              {variants.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3">Pilihan Lainnya</h3>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {variants.slice(0, 4).map((variant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => navigate(`/package/${variant.id}`)}
+                        className={`shrink-0 w-20 group ${
+                          selectedVariant === variant.id ? 'ring-2 ring-primary rounded-xl' : ''
+                        }`}
+                      >
+                        <div className="h-16 w-20 rounded-xl overflow-hidden mb-1">
+                          <img
+                            src={variant.image}
+                            alt={variant.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <p className="text-xs text-center line-clamp-2">{variant.name}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="flex-1 gap-2"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Tambah ke Keranjang
-                </Button>
-                <Button
-                  size="lg"
-                  variant="sunrise"
-                  className="flex-1 gap-2"
-                  onClick={handleCheckout}
-                >
-                  Checkout Sekarang
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </div>
+              {/* Pickup Locations (for Penjemputan category) */}
+              {isPenjemputan && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Pilih Lokasi Penjemputan</h3>
+                  
+                  {/* Surabaya */}
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Surabaya</p>
+                    <div className="flex flex-wrap gap-2">
+                      {pickupLocations.surabaya.map((loc) => (
+                        <button
+                          key={loc.id}
+                          onClick={() => setSelectedLocation(loc.id)}
+                          className={`px-3 py-2 rounded-xl text-sm border transition-all ${
+                            selectedLocation === loc.id
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {loc.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Malang */}
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Malang</p>
+                    <div className="flex flex-wrap gap-2">
+                      {pickupLocations.malang.map((loc) => (
+                        <button
+                          key={loc.id}
+                          onClick={() => setSelectedLocation(loc.id)}
+                          className={`px-3 py-2 rounded-xl text-sm border transition-all ${
+                            selectedLocation === loc.id
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {loc.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Itinerary */}
               {pkg.itinerary && pkg.itinerary.length > 0 && (
                 <Card className="border-none shadow-soft">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">📍 Itinerary</h3>
-                    <div className="space-y-3">
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold mb-3">Itinerary</h3>
+                    <div className="space-y-2">
                       {pkg.itinerary.map((item, idx) => (
                         <div key={idx} className="flex items-start gap-3">
                           <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 text-xs font-bold">
@@ -227,18 +234,15 @@ const PackageDetailPage = () => {
               )}
 
               {/* Includes / Excludes */}
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {pkg.includes && pkg.includes.length > 0 && (
                   <Card className="border-none shadow-soft">
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <Check className="h-5 w-5 text-green-500" />
-                        Termasuk
-                      </h3>
-                      <ul className="space-y-2">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold mb-3 text-green-600">Termasuk</h3>
+                      <ul className="space-y-1">
                         {pkg.includes.map((item, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                            <span className="text-green-500 shrink-0">✓</span>
                             {item}
                           </li>
                         ))}
@@ -249,15 +253,12 @@ const PackageDetailPage = () => {
 
                 {pkg.excludes && pkg.excludes.length > 0 && (
                   <Card className="border-none shadow-soft">
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <X className="h-5 w-5 text-red-500" />
-                        Tidak Termasuk
-                      </h3>
-                      <ul className="space-y-2">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold mb-3 text-red-600">Tidak Termasuk</h3>
+                      <ul className="space-y-1">
                         {pkg.excludes.map((item, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm">
-                            <X className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                            <span className="text-red-500 shrink-0">✗</span>
                             {item}
                           </li>
                         ))}
@@ -267,20 +268,123 @@ const PackageDetailPage = () => {
                 )}
               </div>
 
+              {/* Meeting Point */}
+              {pkg.meetingPoint && (
+                <div className="p-4 rounded-2xl bg-secondary/50">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Meeting Point</div>
+                  <div className="font-medium">{pkg.meetingPoint}</div>
+                </div>
+              )}
+
               {/* Notes */}
               {pkg.notes && (
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-sunrise-50 border border-sunrise-200">
-                  <AlertCircle className="h-5 w-5 text-sunrise-600 shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-medium text-sunrise-700 mb-1">Catatan</div>
-                    <p className="text-sm text-sunrise-600">{pkg.notes}</p>
-                  </div>
+                <div className="p-4 rounded-2xl bg-sunrise-50 border border-sunrise-200">
+                  <div className="text-sm font-medium text-sunrise-700 mb-1">Catatan</div>
+                  <p className="text-sm text-sunrise-600">{pkg.notes}</p>
                 </div>
               )}
             </div>
+
+            {/* Right Column - Sticky Order Card (Desktop) */}
+            <div className="hidden lg:block lg:col-span-3">
+              <div className="sticky top-24">
+                <Card className="shadow-medium">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Ringkasan Pesanan</h3>
+                    
+                    {/* Package Image */}
+                    <div className="aspect-video rounded-xl overflow-hidden mb-4">
+                      <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+                    </div>
+
+                    {/* Package Name */}
+                    <p className="font-medium mb-2">{pkg.name}</p>
+                    
+                    {/* Price */}
+                    <div className="text-2xl font-bold text-primary mb-4">
+                      {formatPrice(pkg.price)}
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-muted-foreground">Jumlah</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-secondary"
+                        >
+                          -
+                        </button>
+                        <span className="font-medium w-8 text-center">{quantity}</span>
+                        <button
+                          onClick={() => setQuantity(quantity + 1)}
+                          className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-secondary"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Subtotal */}
+                    <div className="flex items-center justify-between py-3 border-t">
+                      <span className="font-medium">Subtotal</span>
+                      <span className="font-bold text-lg">{formatPrice(pkg.price * quantity)}</span>
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="space-y-3 mt-4">
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={handleAddToCart}
+                      >
+                        Tambah ke Keranjang
+                      </Button>
+                      <Button
+                        className="w-full"
+                        variant="sunrise"
+                        onClick={handleCheckout}
+                      >
+                        Checkout Sekarang
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </main>
+
+      {/* Mobile Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 lg:hidden z-40">
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <div className="text-lg font-bold text-primary">{formatPrice(pkg.price * quantity)}</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="h-6 w-6 rounded-full border text-xs flex items-center justify-center"
+              >
+                -
+              </button>
+              <span className="text-sm">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="h-6 w-6 rounded-full border text-xs flex items-center justify-center"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleAddToCart}>
+            Keranjang
+          </Button>
+          <Button variant="sunrise" size="sm" onClick={handleCheckout}>
+            Checkout
+          </Button>
+        </div>
+      </div>
 
       <Footer />
     </div>

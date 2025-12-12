@@ -16,11 +16,15 @@ export interface Package {
   excludes?: string[];
   meetingPoint?: string;
   notes?: string;
+  capacity?: string;
 }
 
 export interface CartItem {
   package: Package;
   quantity: number;
+  selectedVariant?: string;
+  selectedLocation?: string;
+  selectedDate?: string;
 }
 
 export interface CheckoutForm {
@@ -37,8 +41,9 @@ export interface Category {
   name: string;
   description: string;
   icon: string;
-  bannerImage: string;
-  bannerSubtitle: string;
+  image?: string;
+  bannerImage?: string;
+  bannerSubtitle?: string;
 }
 
 export interface Testimonial {
@@ -47,5 +52,11 @@ export interface Testimonial {
   origin: string;
   comment: string;
   rating: number;
-  avatar: string;
+  avatar?: string;
+}
+
+export interface PickupLocation {
+  id: string;
+  name: string;
+  area: string;
 }
