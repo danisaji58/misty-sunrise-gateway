@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
 import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 import { useCart } from '@/context/CartContext';
-import { formatPrice, openWhatsApp } from '@/utils/whatsapp';
+import { formatPrice, openWhatsApp, openFoodPackageWhatsApp, FoodOrderData } from '@/utils/whatsapp';
 import { CheckoutForm } from '@/types';
 import { 
   User, 
@@ -23,6 +23,7 @@ import { toast } from '@/hooks/use-toast';
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, removeItem } = useCart();
+  const [foodOrderData, setFoodOrderData] = useState<FoodOrderData | null>(null);
   const [form, setForm] = useState<CheckoutForm>({
     name: '',
     tripType: 'pribadi',
@@ -31,6 +32,20 @@ const CheckoutPage = () => {
     participants: 1,
     notes: '',
   });
+
+  // Check for food package order data
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('foodOrderData');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData) as FoodOrderData;
+        setFoodOrderData(parsed);
+        setForm(prev => ({ ...prev, participants: parsed.participants }));
+      } catch (e) {
+        console.error('Failed to parse food order data');
+      }
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +59,20 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Handle food package order
+    if (foodOrderData) {
+      openFoodPackageWhatsApp(form, foodOrderData);
+      sessionStorage.removeItem('foodOrderData');
+      setFoodOrderData(null);
+      toast({
+        title: 'Pesanan terkirim!',
+        description: 'Kami akan segera merespons via WhatsApp.',
+      });
+      navigate('/');
+      return;
+    }
+
+    // Handle regular cart order
     if (items.length === 0) {
       toast({
         title: 'Keranjang kosong',
@@ -61,7 +90,8 @@ const CheckoutPage = () => {
     });
   };
 
-  if (items.length === 0) {
+  // Show empty cart message only if no food order and no cart items
+  if (items.length === 0 && !foodOrderData) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -280,17 +310,76 @@ const CheckoutPage = () => {
                   <CardTitle>Ringkasan Pesanan</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {items.map((item) => (
+                  {/* Food Package Order Summary */}
+                  {foodOrderData && (
+                    <>
+                      <div className="p-3 bg-primary/10 rounded-xl mb-4">
+                        <div className="font-bold text-primary">Picnic Food Package</div>
+                        <div className="text-sm text-muted-foreground">Tipe: {foodOrderData.tier.toUpperCase()}</div>
+                      </div>
+                      
+                      {foodOrderData.packages.map((pkg) => (
+                        <div key={pkg.id} className="pb-3 border-b border-border/50">
+                          <div className="flex justify-between">
+                            <span className="font-medium text-sm">{pkg.name}</span>
+                            <span className="text-sm">{formatPrice(pkg.pricePerPax)}/pax</span>
+                          </div>
+                          <ul className="mt-1 text-xs text-muted-foreground space-y-0.5">
+                            {pkg.menuItems.slice(0, 3).map((item, idx) => (
+                              <li key={idx}>• {item}</li>
+                            ))}
+                            {pkg.menuItems.length > 3 && (
+                              <li>...dan {pkg.menuItems.length - 3} lainnya</li>
+                            )}
+                          </ul>
+                        </div>
+                      ))}
+                      
+                      <div className="flex justify-between text-sm py-2">
+                        <span className="text-muted-foreground">Jumlah Peserta</span>
+                        <span>{foodOrderData.participants} orang</span>
+                      </div>
+                      
+                      <div className="space-y-2 py-2 border-t">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Subtotal Makanan</span>
+                          <span>{formatPrice(foodOrderData.foodSubtotal)}</span>
+                        </div>
+                        
+                        {foodOrderData.minimumOrderFee > 0 && (
+                          <div className="flex justify-between text-sm text-sunrise-600">
+                            <span>Biaya Min. Order</span>
+                            <span>{formatPrice(foodOrderData.minimumOrderFee)}</span>
+                          </div>
+                        )}
+                        
+                        {foodOrderData.pickup && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Transport ({foodOrderData.pickup.vehicle})</span>
+                            <span>{formatPrice(foodOrderData.pickup.price)}</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="pt-4 border-t border-border">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Total</span>
+                          <span className="text-2xl font-bold text-primary">
+                            {formatPrice(foodOrderData.totalPrice)}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  {/* Regular Cart Items */}
+                  {!foodOrderData && items.map((item) => (
                     <div
                       key={item.package.id}
                       className="flex items-start gap-3 pb-4 border-b border-border/50 last:border-0"
                     >
-                      <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center text-xl shrink-0">
-                        {item.package.category === 'jeep' && '🚙'}
-                        {item.package.category === 'penginapan' && '🏨'}
-                        {item.package.category === 'penjemputan' && '✈️'}
-                        {item.package.category === 'makan' && '🍱'}
-                        {item.package.category === 'dokumentasi' && '📸'}
+                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-secondary shrink-0">
+                        <img src={item.package.image} alt={item.package.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm line-clamp-1">
@@ -316,17 +405,19 @@ const CheckoutPage = () => {
                     </div>
                   ))}
 
-                  <div className="pt-4 border-t border-border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {formatPrice(totalPrice)}
-                      </span>
+                  {!foodOrderData && (
+                    <div className="pt-4 border-t border-border">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatPrice(totalPrice)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        * Harga dapat berubah sesuai konfirmasi admin
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      * Harga dapat berubah sesuai konfirmasi admin
-                    </p>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
