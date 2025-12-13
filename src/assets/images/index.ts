@@ -23,6 +23,14 @@ export { default as picnicBreakfast } from './picnic-breakfast.jpg';
 export { default as snackBox } from './snack-box.jpg';
 export { default as fullMeal } from './full-meal.jpg';
 
+// Food menu packages
+export { default as menuEconomy1 } from '../food/menu-economy-1.jpg';
+export { default as menuEconomy2 } from '../food/menu-economy-2.jpg';
+export { default as menuStandard1 } from '../food/menu-standard-1.jpg';
+export { default as menuStandard2 } from '../food/menu-standard-2.jpg';
+export { default as menuVip1 } from '../food/menu-vip-1.jpg';
+export { default as menuVip2 } from '../food/menu-vip-2.jpg';
+
 // Dokumentasi
 export { default as fotoBasic } from './foto-basic.jpg';
 export { default as fotoPremium } from './foto-premium.jpg';

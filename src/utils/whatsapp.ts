@@ -55,12 +55,117 @@ Mohon konfirmasi ketersediaan dan detail pembayaran. Terima kasih! 🙏
   return message;
 };
 
+// Food Package Order Interface
+export interface FoodOrderData {
+  type: 'food-package';
+  tier: string;
+  packages: {
+    id: string;
+    name: string;
+    menuItems: string[];
+    pricePerPax: number;
+  }[];
+  participants: number;
+  minimumOrderFee: number;
+  pickup: {
+    city: string;
+    location: string;
+    vehicle: string;
+    price: number;
+  } | null;
+  foodSubtotal: number;
+  totalPrice: number;
+}
+
+export const generateFoodPackageMessage = (
+  form: CheckoutForm,
+  orderData: FoodOrderData
+): string => {
+  // Build menu packages list
+  const packagesList = orderData.packages
+    .map(pkg => {
+      const menuList = pkg.menuItems.map(item => `    - ${item}`).join('\n');
+      return `• ${pkg.name} (${formatPrice(pkg.pricePerPax)}/pax)\n${menuList}`;
+    })
+    .join('\n\n');
+
+  // Build pickup section if selected
+  const pickupSection = orderData.pickup
+    ? `
+━━━━━━━━━━━━━━━━━━━━━
+
+🚗 *PENJEMPUTAN*
+Kota: ${orderData.pickup.city}
+Lokasi: ${orderData.pickup.location}
+Kendaraan: ${orderData.pickup.vehicle}
+Harga: ${formatPrice(orderData.pickup.price)}`
+    : '';
+
+  // Build price breakdown
+  let priceBreakdown = `Subtotal Makanan: ${formatPrice(orderData.foodSubtotal)}`;
+  
+  if (orderData.minimumOrderFee > 0) {
+    priceBreakdown += `\nBiaya Min. Order (<40 pax): ${formatPrice(orderData.minimumOrderFee)}`;
+  }
+  
+  if (orderData.pickup) {
+    priceBreakdown += `\nTransport: ${formatPrice(orderData.pickup.price)}`;
+  }
+
+  const message = `
+🌄 *PESANAN PICNIC FOOD PACKAGE*
+*AjiraBromo Travel*
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *DATA PEMESAN*
+Nama: ${form.name}
+Tipe: ${form.tripType === 'travel' ? 'Travel Group' : 'Pribadi'}
+Kewarganegaraan: ${form.nationality}
+Tanggal: ${form.date}
+Jumlah Peserta: ${form.participants} orang
+${form.notes ? `Catatan: ${form.notes}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+🍱 *PAKET MAKANAN - ${orderData.tier.toUpperCase()}*
+
+${packagesList}
+${pickupSection}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+💳 *RINCIAN HARGA*
+${priceBreakdown}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+💰 *TOTAL: ${formatPrice(orderData.totalPrice)}*
+
+━━━━━━━━━━━━━━━━━━━━━
+
+Mohon konfirmasi ketersediaan dan detail pembayaran. Terima kasih! 🙏
+`.trim();
+
+  return message;
+};
+
 export const openWhatsApp = (
   items: CartItem[],
   form: CheckoutForm,
   totalPrice: number
 ): void => {
   const message = generateWhatsAppMessage(items, form, totalPrice);
+  const encodedMessage = encodeURIComponent(message);
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+  window.open(url, '_blank');
+};
+
+export const openFoodPackageWhatsApp = (
+  form: CheckoutForm,
+  orderData: FoodOrderData
+): void => {
+  const message = generateFoodPackageMessage(form, orderData);
   const encodedMessage = encodeURIComponent(message);
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
   window.open(url, '_blank');
