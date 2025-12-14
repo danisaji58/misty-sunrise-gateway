@@ -24,8 +24,11 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
     });
   };
 
+  // Food category packages go to the dedicated food package page
+  const detailUrl = pkg.category === 'makan' ? '/food-package' : `/package/${pkg.id}`;
+
   return (
-    <Link to={`/package/${pkg.id}`}>
+    <Link to={detailUrl}>
       <Card className="group overflow-hidden h-full flex flex-col hover:shadow-medium transition-all duration-300">
         {/* Image */}
         <div className="relative h-48 bg-gradient-to-br from-mist to-secondary overflow-hidden">

@@ -31,7 +31,7 @@ const FoodPackageDetailPage = () => {
   const navigate = useNavigate();
   
   // State for selections
-  const [selectedTier, setSelectedTier] = useState<string>(''); // No tier selected initially
+  const [selectedTier, setSelectedTier] = useState<string>('standard');
   const [selectedPackages, setSelectedPackages] = useState<Set<string>>(new Set());
   
   // Handler to change tier and clear previous selections
@@ -172,16 +172,15 @@ const FoodPackageDetailPage = () => {
                 </div>
               </section>
 
-              {/* Menu Package Selection - Only show when tier is selected */}
-              {selectedTier ? (
-                <section>
-                  <h2 className="text-xl font-bold mb-2">Pilih Menu Paket</h2>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Anda dapat memilih lebih dari satu paket menu
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {currentTier?.packages.map(pkg => {
+              {/* Menu Package Selection */}
+              <section>
+                <h2 className="text-xl font-bold mb-2">Pilih Menu Paket</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Anda dapat memilih lebih dari satu paket menu
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentTier?.packages.map(pkg => {
                     const isSelected = selectedPackages.has(pkg.id);
                     return (
                       <Card 
@@ -230,16 +229,8 @@ const FoodPackageDetailPage = () => {
                       </Card>
                     );
                   })}
-                  </div>
-                </section>
-              ) : (
-                <section className="p-8 text-center bg-secondary/30 rounded-2xl border-2 border-dashed border-border">
-                  <h2 className="text-xl font-bold mb-2">Pilih Tipe Paket Terlebih Dahulu</h2>
-                  <p className="text-muted-foreground">
-                    Silakan pilih Economy, Standard, atau VIP di atas untuk melihat menu yang tersedia
-                  </p>
-                </section>
-              )}
+                </div>
+              </section>
 
               {/* Participant Count */}
               <section>
