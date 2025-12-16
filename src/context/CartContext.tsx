@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { Package, CartItem } from '@/types';
+import { Package, CartItem, FoodPicnicCartData, PickupCartData } from '@/types';
 
 interface CartState {
   items: CartItem[];
@@ -7,7 +7,9 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_ITEM'; payload: Package }
+  | { type: 'ADD_PACKAGE'; payload: Package }
+  | { type: 'ADD_FOOD_PICNIC'; payload: FoodPicnicCartData }
+  | { type: 'ADD_PICKUP'; payload: PickupCartData }
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' }
@@ -17,6 +19,8 @@ type CartAction =
 
 interface CartContextType extends CartState {
   addItem: (pkg: Package) => void;
+  addFoodPicnic: (data: FoodPicnicCartData) => void;
+  addPickup: (data: PickupCartData) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -28,40 +32,71 @@ interface CartContextType extends CartState {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const generateId = () => `cart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
-    case 'ADD_ITEM': {
+    case 'ADD_PACKAGE': {
       const existingItem = state.items.find(
-        (item) => item.package.id === action.payload.id
+        (item) => item.type === 'package' && item.package?.id === action.payload.id
       );
       if (existingItem) {
         return {
           ...state,
           items: state.items.map((item) =>
-            item.package.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
+            item.id === existingItem.id
+              ? { ...item, quantity: (item.quantity || 1) + 1 }
               : item
           ),
         };
       }
       return {
         ...state,
-        items: [...state.items, { package: action.payload, quantity: 1 }],
+        items: [...state.items, { 
+          id: generateId(),
+          type: 'package',
+          package: action.payload, 
+          quantity: 1 
+        }],
+      };
+    }
+    case 'ADD_FOOD_PICNIC': {
+      // Replace existing food picnic if any
+      const filtered = state.items.filter(item => item.type !== 'food-picnic');
+      return {
+        ...state,
+        items: [...filtered, {
+          id: generateId(),
+          type: 'food-picnic',
+          foodPicnic: action.payload,
+        }],
+      };
+    }
+    case 'ADD_PICKUP': {
+      // Replace existing pickup if any
+      const filtered = state.items.filter(item => item.type !== 'pickup');
+      return {
+        ...state,
+        items: [...filtered, {
+          id: generateId(),
+          type: 'pickup',
+          pickup: action.payload,
+        }],
       };
     }
     case 'REMOVE_ITEM':
       return {
         ...state,
-        items: state.items.filter((item) => item.package.id !== action.payload),
+        items: state.items.filter((item) => item.id !== action.payload),
       };
     case 'UPDATE_QUANTITY':
       return {
         ...state,
         items: state.items.map((item) =>
-          item.package.id === action.payload.id
+          item.id === action.payload.id
             ? { ...item, quantity: Math.max(0, action.payload.quantity) }
             : item
-        ).filter((item) => item.quantity > 0),
+        ).filter((item) => item.type !== 'package' || (item.quantity && item.quantity > 0)),
       };
     case 'CLEAR_CART':
       return { ...state, items: [] };
@@ -102,7 +137,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('bromo-cart', JSON.stringify(state.items));
   }, [state.items]);
 
-  const addItem = (pkg: Package) => dispatch({ type: 'ADD_ITEM', payload: pkg });
+  const addItem = (pkg: Package) => dispatch({ type: 'ADD_PACKAGE', payload: pkg });
+  const addFoodPicnic = (data: FoodPicnicCartData) => dispatch({ type: 'ADD_FOOD_PICNIC', payload: data });
+  const addPickup = (data: PickupCartData) => dispatch({ type: 'ADD_PICKUP', payload: data });
   const removeItem = (id: string) => dispatch({ type: 'REMOVE_ITEM', payload: id });
   const updateQuantity = (id: string, quantity: number) =>
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
@@ -110,17 +147,31 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleCart = () => dispatch({ type: 'TOGGLE_CART' });
   const closeCart = () => dispatch({ type: 'CLOSE_CART' });
 
-  const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = state.items.reduce(
-    (sum, item) => sum + item.package.price * item.quantity,
-    0
-  );
+  const totalItems = state.items.reduce((sum, item) => {
+    if (item.type === 'package') return sum + (item.quantity || 1);
+    return sum + 1;
+  }, 0);
+  
+  const totalPrice = state.items.reduce((sum, item) => {
+    if (item.type === 'package' && item.package) {
+      return sum + item.package.price * (item.quantity || 1);
+    }
+    if (item.type === 'food-picnic' && item.foodPicnic) {
+      return sum + item.foodPicnic.subtotal + item.foodPicnic.minimumOrderFee;
+    }
+    if (item.type === 'pickup' && item.pickup) {
+      return sum + item.pickup.price;
+    }
+    return sum;
+  }, 0);
 
   return (
     <CartContext.Provider
       value={{
         ...state,
         addItem,
+        addFoodPicnic,
+        addPickup,
         removeItem,
         updateQuantity,
         clearCart,

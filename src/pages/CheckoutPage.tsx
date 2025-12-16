@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
 import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 import { useCart } from '@/context/CartContext';
-import { formatPrice, openWhatsApp, openFoodPackageWhatsApp, FoodOrderData } from '@/utils/whatsapp';
+import { formatPrice, openWhatsApp } from '@/utils/whatsapp';
 import { CheckoutForm } from '@/types';
 import { 
   User, 
@@ -23,7 +23,6 @@ import { toast } from '@/hooks/use-toast';
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, removeItem } = useCart();
-  const [foodOrderData, setFoodOrderData] = useState<FoodOrderData | null>(null);
   const [form, setForm] = useState<CheckoutForm>({
     name: '',
     tripType: 'pribadi',
@@ -32,20 +31,6 @@ const CheckoutPage = () => {
     participants: 1,
     notes: '',
   });
-
-  // Check for food package order data
-  useEffect(() => {
-    const savedData = sessionStorage.getItem('foodOrderData');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData) as FoodOrderData;
-        setFoodOrderData(parsed);
-        setForm(prev => ({ ...prev, participants: parsed.participants }));
-      } catch (e) {
-        console.error('Failed to parse food order data');
-      }
-    }
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,20 +44,6 @@ const CheckoutPage = () => {
       return;
     }
 
-    // Handle food package order
-    if (foodOrderData) {
-      openFoodPackageWhatsApp(form, foodOrderData);
-      sessionStorage.removeItem('foodOrderData');
-      setFoodOrderData(null);
-      toast({
-        title: 'Pesanan terkirim!',
-        description: 'Kami akan segera merespons via WhatsApp.',
-      });
-      navigate('/');
-      return;
-    }
-
-    // Handle regular cart order
     if (items.length === 0) {
       toast({
         title: 'Keranjang kosong',
@@ -88,10 +59,11 @@ const CheckoutPage = () => {
       title: 'Pesanan terkirim!',
       description: 'Kami akan segera merespons via WhatsApp.',
     });
+    navigate('/');
   };
 
-  // Show empty cart message only if no food order and no cart items
-  if (items.length === 0 && !foodOrderData) {
+  // Show empty cart message
+  if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -310,114 +282,147 @@ const CheckoutPage = () => {
                   <CardTitle>Ringkasan Pesanan</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Food Package Order Summary */}
-                  {foodOrderData && (
-                    <>
-                      <div className="p-3 bg-primary/10 rounded-xl mb-4">
-                        <div className="font-bold text-primary">Picnic Food Package</div>
-                        <div className="text-sm text-muted-foreground">Tipe: {foodOrderData.tier.toUpperCase()}</div>
-                      </div>
-                      
-                      {foodOrderData.packages.map((pkg) => (
-                        <div key={pkg.id} className="pb-3 border-b border-border/50">
-                          <div className="flex justify-between">
-                            <span className="font-medium text-sm">{pkg.name}</span>
-                            <span className="text-sm">{formatPrice(pkg.pricePerPax)}/pax</span>
-                          </div>
-                          <ul className="mt-1 text-xs text-muted-foreground space-y-0.5">
-                            {pkg.menuItems.slice(0, 3).map((item, idx) => (
-                              <li key={idx}>• {item}</li>
-                            ))}
-                            {pkg.menuItems.length > 3 && (
-                              <li>...dan {pkg.menuItems.length - 3} lainnya</li>
-                            )}
-                          </ul>
-                        </div>
-                      ))}
-                      
-                      <div className="flex justify-between text-sm py-2">
-                        <span className="text-muted-foreground">Jumlah Peserta</span>
-                        <span>{foodOrderData.participants} orang</span>
-                      </div>
-                      
-                      <div className="space-y-2 py-2 border-t">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Subtotal Makanan</span>
-                          <span>{formatPrice(foodOrderData.foodSubtotal)}</span>
-                        </div>
-                        
-                        {foodOrderData.minimumOrderFee > 0 && (
-                          <div className="flex justify-between text-sm text-sunrise-600">
-                            <span>Biaya Min. Order</span>
-                            <span>{formatPrice(foodOrderData.minimumOrderFee)}</span>
-                          </div>
-                        )}
-                        
-                        {foodOrderData.pickup && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Transport ({foodOrderData.pickup.vehicle})</span>
-                            <span>{formatPrice(foodOrderData.pickup.price)}</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="pt-4 border-t border-border">
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Total</span>
-                          <span className="text-2xl font-bold text-primary">
-                            {formatPrice(foodOrderData.totalPrice)}
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  
-                  {/* Regular Cart Items */}
-                  {!foodOrderData && items.map((item) => (
-                    <div
-                      key={item.package.id}
-                      className="flex items-start gap-3 pb-4 border-b border-border/50 last:border-0"
-                    >
-                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-secondary shrink-0">
-                        <img src={item.package.image} alt={item.package.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-1">
-                          {item.package.name}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          {item.quantity}x {formatPrice(item.package.price)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">
-                          {formatPrice(item.package.price * item.quantity)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={() => removeItem(item.package.id)}
+                  {items.map((item) => {
+                    // Regular package item
+                    if (item.type === 'package' && item.package) {
+                      const pkg = item.package;
+                      const qty = item.quantity || 1;
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-start gap-3 pb-4 border-b border-border/50 last:border-0"
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                          <div className="h-12 w-12 rounded-xl overflow-hidden bg-secondary shrink-0">
+                            <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-sm line-clamp-1">
+                              {pkg.name}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {qty}x {formatPrice(pkg.price)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold">
+                              {formatPrice(pkg.price * qty)}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    }
 
-                  {!foodOrderData && (
-                    <div className="pt-4 border-t border-border">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Total</span>
-                        <span className="text-2xl font-bold text-primary">
-                          {formatPrice(totalPrice)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        * Harga dapat berubah sesuai konfirmasi admin
-                      </p>
+                    // Food Picnic item
+                    if (item.type === 'food-picnic' && item.foodPicnic) {
+                      const fp = item.foodPicnic;
+                      return (
+                        <div key={item.id} className="pb-4 border-b border-border/50">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="p-3 bg-primary/10 rounded-xl flex-1 mr-2">
+                              <div className="font-bold text-primary">Picnic Food Package</div>
+                              <div className="text-sm text-muted-foreground">Tipe: {fp.tierName}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          {fp.packages.map((pkg) => (
+                            <div key={pkg.id} className="pb-3 border-b border-border/50 mb-3 last:border-0 last:mb-0">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-sm">{pkg.name}</span>
+                                <span className="text-sm">{formatPrice(pkg.pricePerPax)}/pax</span>
+                              </div>
+                              <ul className="mt-1 text-xs text-muted-foreground space-y-0.5">
+                                {pkg.menuItems.slice(0, 3).map((menuItem, idx) => (
+                                  <li key={idx}>• {menuItem}</li>
+                                ))}
+                                {pkg.menuItems.length > 3 && (
+                                  <li>...dan {pkg.menuItems.length - 3} lainnya</li>
+                                )}
+                              </ul>
+                            </div>
+                          ))}
+                          
+                          <div className="flex justify-between text-sm py-2">
+                            <span className="text-muted-foreground">Jumlah Peserta</span>
+                            <span>{fp.participants} orang</span>
+                          </div>
+                          
+                          <div className="space-y-2 py-2 border-t">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Subtotal Makanan</span>
+                              <span>{formatPrice(fp.subtotal)}</span>
+                            </div>
+                            
+                            {fp.minimumOrderFee > 0 && (
+                              <div className="flex justify-between text-sm text-sunrise-600">
+                                <span>Biaya Min. Order</span>
+                                <span>{formatPrice(fp.minimumOrderFee)}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Pickup item
+                    if (item.type === 'pickup' && item.pickup) {
+                      const pu = item.pickup;
+                      return (
+                        <div key={item.id} className="pb-4 border-b border-border/50">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="p-3 bg-secondary/50 rounded-xl flex-1 mr-2">
+                              <div className="font-bold">Penjemputan</div>
+                              <div className="text-sm text-muted-foreground">{pu.vehicleName}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="text-sm text-muted-foreground mb-2">
+                            {pu.cityName} - {pu.locationName}
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">{pu.vehicleCapacity}</span>
+                            <span className="font-semibold">{formatPrice(pu.price)}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })}
+
+                  <div className="pt-4 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Total</span>
+                      <span className="text-2xl font-bold text-primary">
+                        {formatPrice(totalPrice)}
+                      </span>
                     </div>
-                  )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      * Harga dapat berubah sesuai konfirmasi admin
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>

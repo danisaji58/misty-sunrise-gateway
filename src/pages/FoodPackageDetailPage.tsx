@@ -6,45 +6,30 @@ import { CartSidebar } from '@/components/CartSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/utils/whatsapp';
+import { useCart } from '@/context/CartContext';
+import { toast } from '@/hooks/use-toast';
 import { 
   menuTiers, 
-  pickupVehicles, 
-  pickupCities,
   MenuItem,
   MINIMUM_PARTICIPANTS,
   MINIMUM_ORDER_FEE,
-  calculateMinimumOrderFee,
-  calculatePickupPrice,
 } from '@/data/foodPackages';
 import { bannerMakan } from '@/assets/images';
-import { carAvanza, carInnova, carHiace } from '@/assets/images';
-
-// Map vehicle images
-const vehicleImages: Record<string, string> = {
-  'hiace-commuter': carHiace,
-  'hiace-premio': carHiace,
-  'avanza': carAvanza,
-  'innova-reborn': carInnova,
-};
 
 const FoodPackageDetailPage = () => {
   const navigate = useNavigate();
+  const { addFoodPicnic } = useCart();
   
   // State for selections
   const [selectedTier, setSelectedTier] = useState<string>('standard');
   const [selectedPackages, setSelectedPackages] = useState<Set<string>>(new Set());
+  const [participants, setParticipants] = useState<number>(20);
   
   // Handler to change tier and clear previous selections
   const handleTierChange = (tierId: string) => {
     setSelectedTier(tierId);
     setSelectedPackages(new Set()); // Clear selections when tier changes
   };
-  const [participants, setParticipants] = useState<number>(20);
-  
-  // Pickup state
-  const [selectedCity, setSelectedCity] = useState<string>('malang');
-  const [selectedLocation, setSelectedLocation] = useState<string>('');
-  const [selectedVehicle, setSelectedVehicle] = useState<string>('');
   
   // Get current tier data
   const currentTier = menuTiers.find(t => t.id === selectedTier);
@@ -67,14 +52,13 @@ const FoodPackageDetailPage = () => {
     return selectedPackageData.reduce((sum, pkg) => sum + (pkg.pricePerPax * participants), 0);
   }, [selectedPackageData, participants]);
   
-  const minimumOrderFee = calculateMinimumOrderFee(participants);
+  // VIP tier has NO minimum order fee
+  const minimumOrderFee = useMemo(() => {
+    if (selectedTier === 'vip') return 0;
+    return participants < MINIMUM_PARTICIPANTS ? MINIMUM_ORDER_FEE : 0;
+  }, [selectedTier, participants]);
   
-  const pickupPrice = useMemo(() => {
-    if (!selectedVehicle || !selectedCity) return 0;
-    return calculatePickupPrice(selectedVehicle, selectedCity);
-  }, [selectedVehicle, selectedCity]);
-  
-  const totalPrice = foodSubtotal + minimumOrderFee + pickupPrice;
+  const totalPrice = foodSubtotal + minimumOrderFee;
   
   // Toggle package selection
   const togglePackage = (packageId: string) => {
@@ -89,15 +73,20 @@ const FoodPackageDetailPage = () => {
     });
   };
   
-  // Get current city data
-  const currentCity = pickupCities.find(c => c.id === selectedCity);
-  
-  // Handle checkout
-  const handleCheckout = () => {
-    // Store selection in session for checkout page
-    const orderData = {
-      type: 'food-package',
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (selectedPackageData.length === 0) {
+      toast({
+        title: 'Pilih menu terlebih dahulu',
+        description: 'Silakan pilih minimal satu paket menu.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    addFoodPicnic({
       tier: selectedTier,
+      tierName: currentTier?.name || selectedTier,
       packages: selectedPackageData.map(p => ({
         id: p.id,
         name: p.name,
@@ -106,18 +95,13 @@ const FoodPackageDetailPage = () => {
       })),
       participants,
       minimumOrderFee,
-      pickup: selectedVehicle ? {
-        city: currentCity?.name,
-        location: currentCity?.locations.find(l => l.id === selectedLocation)?.name,
-        vehicle: pickupVehicles.find(v => v.id === selectedVehicle)?.name,
-        price: pickupPrice,
-      } : null,
-      foodSubtotal,
-      totalPrice,
-    };
-    
-    sessionStorage.setItem('foodOrderData', JSON.stringify(orderData));
-    navigate('/checkout');
+      subtotal: foodSubtotal,
+    });
+
+    toast({
+      title: 'Ditambahkan ke keranjang',
+      description: `Picnic Food Package (${currentTier?.name}) berhasil ditambahkan.`,
+    });
   };
 
   return (
@@ -155,7 +139,7 @@ const FoodPackageDetailPage = () => {
               <section>
                 <h2 className="text-xl font-bold mb-4">Pilih Tipe Paket</h2>
                 <div className="grid grid-cols-3 gap-3">
-                {menuTiers.map(tier => (
+                  {menuTiers.map(tier => (
                     <button
                       key={tier.id}
                       onClick={() => handleTierChange(tier.id)}
@@ -167,6 +151,11 @@ const FoodPackageDetailPage = () => {
                     >
                       <div className="font-bold text-lg">{tier.name}</div>
                       <p className="text-sm text-muted-foreground line-clamp-2">{tier.description}</p>
+                      {tier.id === 'vip' && (
+                        <span className="text-xs text-primary font-medium mt-1 block">
+                          Tanpa biaya minimum
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -257,8 +246,8 @@ const FoodPackageDetailPage = () => {
                   <span className="text-muted-foreground">orang</span>
                 </div>
                 
-                {/* Minimum order warning */}
-                {participants < MINIMUM_PARTICIPANTS && (
+                {/* Minimum order warning - Only for Economy and Standard */}
+                {selectedTier !== 'vip' && participants < MINIMUM_PARTICIPANTS && (
                   <div className="mt-4 p-4 bg-sunrise-50 border border-sunrise-200 rounded-xl">
                     <div className="font-medium text-sunrise-700">
                       Biaya tambahan berlaku
@@ -268,110 +257,6 @@ const FoodPackageDetailPage = () => {
                     </p>
                   </div>
                 )}
-              </section>
-
-              {/* Pickup Section */}
-              <section>
-                <h2 className="text-xl font-bold mb-4">Penjemputan (Opsional)</h2>
-                
-                {/* City Selection */}
-                <div className="mb-4">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Pilih Kota</label>
-                  <div className="flex gap-3">
-                    {pickupCities.map(city => (
-                      <button
-                        key={city.id}
-                        onClick={() => {
-                          setSelectedCity(city.id);
-                          setSelectedLocation('');
-                        }}
-                        className={`px-6 py-3 rounded-xl border-2 font-medium transition-all ${
-                          selectedCity === city.id
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        {city.name}
-                        {city.priceMultiplier > 1 && (
-                          <span className="text-xs text-muted-foreground block">
-                            (+{Math.round((city.priceMultiplier - 1) * 100)}%)
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Location Selection */}
-                {currentCity && (
-                  <div className="mb-4">
-                    <label className="text-sm font-medium text-muted-foreground mb-2 block">Pilih Lokasi</label>
-                    <div className="flex flex-wrap gap-2">
-                      {currentCity.locations.map(loc => (
-                        <button
-                          key={loc.id}
-                          onClick={() => setSelectedLocation(loc.id)}
-                          className={`px-4 py-2 rounded-xl text-sm border transition-all ${
-                            selectedLocation === loc.id
-                              ? 'border-primary bg-primary/10 text-primary'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          {loc.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Vehicle Selection */}
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Pilih Kendaraan</label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {pickupVehicles.map(vehicle => {
-                      const adjustedPrice = calculatePickupPrice(vehicle.id, selectedCity);
-                      return (
-                        <button
-                          key={vehicle.id}
-                          onClick={() => setSelectedVehicle(selectedVehicle === vehicle.id ? '' : vehicle.id)}
-                          className={`rounded-xl overflow-hidden border-2 transition-all ${
-                            selectedVehicle === vehicle.id
-                              ? 'border-primary ring-2 ring-primary/20'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className="aspect-video bg-secondary">
-                            <img 
-                              src={vehicleImages[vehicle.id] || carAvanza} 
-                              alt={vehicle.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="p-3 text-left">
-                            <div className="font-medium text-sm">{vehicle.name}</div>
-                            <div className="text-xs text-muted-foreground">{vehicle.capacity}</div>
-                            <div className="font-bold text-primary text-sm mt-1">
-                              {formatPrice(adjustedPrice)}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  {selectedVehicle && (
-                    <div className="mt-3 p-3 bg-secondary/50 rounded-xl">
-                      <div className="text-sm">
-                        <span className="font-medium text-green-600">Termasuk: </span>
-                        {pickupVehicles.find(v => v.id === selectedVehicle)?.includes.join(', ')}
-                      </div>
-                      <div className="text-sm mt-1">
-                        <span className="font-medium text-red-600">Tidak termasuk: </span>
-                        {pickupVehicles.find(v => v.id === selectedVehicle)?.excludes.join(', ')}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </section>
             </div>
 
@@ -424,13 +309,6 @@ const FoodPackageDetailPage = () => {
                           <span>{formatPrice(minimumOrderFee)}</span>
                         </div>
                       )}
-                      
-                      {pickupPrice > 0 && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Transport</span>
-                          <span>{formatPrice(pickupPrice)}</span>
-                        </div>
-                      )}
                     </div>
                     
                     {/* Total */}
@@ -439,15 +317,15 @@ const FoodPackageDetailPage = () => {
                       <span className="font-bold text-xl text-primary">{formatPrice(totalPrice)}</span>
                     </div>
                     
-                    {/* Checkout Button */}
+                    {/* Add to Cart Button */}
                     <Button
                       className="w-full mt-4"
                       variant="sunrise"
                       size="lg"
-                      onClick={handleCheckout}
+                      onClick={handleAddToCart}
                       disabled={selectedPackageData.length === 0}
                     >
-                      Lanjut ke Checkout
+                      Tambah ke Keranjang
                     </Button>
                   </CardContent>
                 </Card>
@@ -468,10 +346,10 @@ const FoodPackageDetailPage = () => {
           </div>
           <Button
             variant="sunrise"
-            onClick={handleCheckout}
+            onClick={handleAddToCart}
             disabled={selectedPackageData.length === 0}
           >
-            Checkout
+            Tambah ke Keranjang
           </Button>
         </div>
       </div>
