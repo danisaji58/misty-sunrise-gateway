@@ -19,12 +19,53 @@ export interface Package {
   capacity?: string;
 }
 
+// Extended cart item types
+export type CartItemType = 'package' | 'food-picnic' | 'pickup';
+
+// Food picnic sub-package in cart
+export interface FoodPicnicSubPackage {
+  id: string;
+  name: string;
+  menuItems: string[];
+  pricePerPax: number;
+}
+
+// Food picnic cart data
+export interface FoodPicnicCartData {
+  tier: string;
+  tierName: string;
+  packages: FoodPicnicSubPackage[];
+  participants: number;
+  minimumOrderFee: number;
+  subtotal: number;
+}
+
+// Pickup cart data
+export interface PickupCartData {
+  city: string;
+  cityName: string;
+  location: string;
+  locationName: string;
+  vehicle: string;
+  vehicleName: string;
+  vehicleCapacity: string;
+  price: number;
+}
+
+// Extended cart item supporting multiple types
 export interface CartItem {
-  package: Package;
-  quantity: number;
+  id: string; // Unique cart item ID
+  type: CartItemType;
+  // For regular packages
+  package?: Package;
+  quantity?: number;
   selectedVariant?: string;
   selectedLocation?: string;
   selectedDate?: string;
+  // For food picnic
+  foodPicnic?: FoodPicnicCartData;
+  // For pickup
+  pickup?: PickupCartData;
 }
 
 export interface CheckoutForm {
