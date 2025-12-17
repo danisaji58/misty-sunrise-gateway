@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import PackagesPage from "./pages/PackagesPage";
 import PackageDetailPage from "./pages/PackageDetailPage";
 import FoodPackageDetailPage from "./pages/FoodPackageDetailPage";
+import RegularFoodDetailPage from "./pages/RegularFoodDetailPage";
 import PickupDetailPage from "./pages/PickupDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/packages/:category" element={<PackagesPage />} />
             <Route path="/package/:id" element={<PackageDetailPage />} />
             <Route path="/food-package" element={<FoodPackageDetailPage />} />
+            <Route path="/food/:id" element={<RegularFoodDetailPage />} />
             <Route path="/pickup" element={<PickupDetailPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

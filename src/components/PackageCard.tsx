@@ -26,12 +26,15 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
 
   // Navigation logic:
   // - Picnic Breakfast (sarapan-sunrise) → /food-package (has tier selection)
-  // - Other food packages → regular detail page
+  // - Snack Box, Makan Lengkap → /food/:id (regular food detail)
   // - Penjemputan → /pickup (dedicated pickup page)
   // - Others → regular detail page
   const getDetailUrl = () => {
     if (pkg.category === 'makan' && pkg.id === 'sarapan-sunrise') {
       return '/food-package';
+    }
+    if (pkg.category === 'makan' && (pkg.id === 'snack-box' || pkg.id === 'makan-lengkap')) {
+      return `/food/${pkg.id}`;
     }
     if (pkg.category === 'penjemputan') {
       return '/pickup';

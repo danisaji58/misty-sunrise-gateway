@@ -264,14 +264,14 @@ export const menuTiers: MenuTier[] = [
   },
 ];
 
-// Pickup Vehicles (Malang prices, Surabaya uses multiplier)
+// Pickup Vehicles (Malang prices - fixed)
 export const pickupVehicles: PickupVehicle[] = [
   {
     id: 'hiace-commuter',
     name: 'Hiace Commuter',
     price: 1000000,
     capacity: '12-14 orang',
-    includes: ['Kendaraan', 'Driver', 'BBM'],
+    includes: ['Kendaraan', 'Driver', 'BBM', 'Tiket Tol'],
     excludes: ['Parkir'],
     image: '',
   },
@@ -280,7 +280,7 @@ export const pickupVehicles: PickupVehicle[] = [
     name: 'Hiace Premio',
     price: 1100000,
     capacity: '10-12 orang',
-    includes: ['Kendaraan', 'Driver', 'BBM'],
+    includes: ['Kendaraan', 'Driver', 'BBM', 'Tiket Tol'],
     excludes: ['Parkir'],
     image: '',
   },
@@ -289,7 +289,7 @@ export const pickupVehicles: PickupVehicle[] = [
     name: 'Avanza',
     price: 550000,
     capacity: '6 orang',
-    includes: ['Kendaraan', 'Driver', 'BBM'],
+    includes: ['Kendaraan', 'Driver', 'BBM', 'Tiket Tol'],
     excludes: ['Parkir'],
     image: '',
   },
@@ -298,7 +298,7 @@ export const pickupVehicles: PickupVehicle[] = [
     name: 'Innova Reborn',
     price: 650000,
     capacity: '6 orang',
-    includes: ['Kendaraan', 'Driver', 'BBM'],
+    includes: ['Kendaraan', 'Driver', 'BBM', 'Tiket Tol'],
     excludes: ['Parkir'],
     image: '',
   },
