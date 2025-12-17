@@ -24,8 +24,21 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
     });
   };
 
-  // Food category packages go to the dedicated food package page
-  const detailUrl = pkg.category === 'makan' ? '/food-package' : `/package/${pkg.id}`;
+  // Navigation logic:
+  // - Picnic Breakfast (sarapan-sunrise) → /food-package (has tier selection)
+  // - Other food packages → regular detail page
+  // - Penjemputan → /pickup (dedicated pickup page)
+  // - Others → regular detail page
+  const getDetailUrl = () => {
+    if (pkg.category === 'makan' && pkg.id === 'sarapan-sunrise') {
+      return '/food-package';
+    }
+    if (pkg.category === 'penjemputan') {
+      return '/pickup';
+    }
+    return `/package/${pkg.id}`;
+  };
+  const detailUrl = getDetailUrl();
 
   return (
     <Link to={detailUrl}>
