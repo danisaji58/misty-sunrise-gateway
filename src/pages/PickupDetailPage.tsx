@@ -12,12 +12,12 @@ import {
   pickupCities,
   calculatePickupPrice,
 } from '@/data/foodPackages';
-import { bannerPenjemputan } from '@/assets/images';
+import { bannerPenjemputan, carHiace1,  } from '@/assets/images';
 import { carAvanza, carInnova, carHiace } from '@/assets/images';
 
 // Map vehicle images
 const vehicleImages: Record<string, string> = {
-  'hiace-commuter': carHiace,
+  'hiace-commuter': carHiace1,
   'hiace-premio': carHiace,
   'avanza': carAvanza,
   'innova-reborn': carInnova,
@@ -140,7 +140,7 @@ const PickupDetailPage = () => {
                 </div>
               </section>
 
-              {/* Location Selection */}
+              {/* Location Selection */}    
               {currentCity && (
                 <section>
                   <h2 className="text-xl font-bold mb-4">Pilih Lokasi Penjemputan</h2>

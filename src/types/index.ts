@@ -72,6 +72,7 @@ export interface CheckoutForm {
   name: string;
   tripType: 'travel' | 'pribadi';
   nationality: 'WNI' | 'WNA';
+  ticketStatus: 'Ada' | 'Tidak Ada'
   date: string;
   participants: number;
   notes?: string;

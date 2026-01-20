@@ -1,6 +1,6 @@
 import { CartItem, CheckoutForm } from '@/types';
 
-const WHATSAPP_NUMBER = '6281234567890'; // Replace with actual number
+const WHATSAPP_NUMBER = '6288802216167'; // Replace with actual number
 
 export const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('id-ID', {
@@ -23,6 +23,7 @@ export const generateMergedWhatsAppMessage = (
   sections.push(`📋 *DATA PEMESAN*
 Nama: ${form.name}
 Tipe: ${form.tripType === 'travel' ? 'Travel Group' : 'Pribadi'}
+🎟️ Tiket: ${form.ticketStatus}
 Kewarganegaraan: ${form.nationality}
 Tanggal: ${form.date}
 Jumlah Peserta: ${form.participants} orang${form.notes ? `\nCatatan: ${form.notes}` : ''}`);
@@ -132,7 +133,6 @@ export const generateFoodPackageMessage = (
   form: CheckoutForm,
   orderData: FoodOrderData
 ): string => {
-  // Build menu packages list
   const packagesList = orderData.packages
     .map(pkg => {
       const menuList = pkg.menuItems.map(item => `    - ${item}`).join('\n');
@@ -140,7 +140,6 @@ export const generateFoodPackageMessage = (
     })
     .join('\n\n');
 
-  // Build pickup section if selected
   const pickupSection = orderData.pickup
     ? `
 ━━━━━━━━━━━━━━━━━━━━━
@@ -152,7 +151,6 @@ Kendaraan: ${orderData.pickup.vehicle}
 Harga: ${formatPrice(orderData.pickup.price)}`
     : '';
 
-  // Build price breakdown
   let priceBreakdown = `Subtotal Makanan: ${formatPrice(orderData.foodSubtotal)}`;
   
   if (orderData.minimumOrderFee > 0) {
@@ -172,6 +170,7 @@ Harga: ${formatPrice(orderData.pickup.price)}`
 📋 *DATA PEMESAN*
 Nama: ${form.name}
 Tipe: ${form.tripType === 'travel' ? 'Travel Group' : 'Pribadi'}
+🎟️ Tiket: ${form.ticketStatus}
 Kewarganegaraan: ${form.nationality}
 Tanggal: ${form.date}
 Jumlah Peserta: ${form.participants} orang

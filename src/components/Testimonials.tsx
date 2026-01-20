@@ -18,7 +18,7 @@ export const Testimonials = () => {
             Apa Kata Mereka?
           </h2>
           <p className="text-muted-foreground">
-            Ribuan pelanggan telah mempercayakan perjalanan Bromo mereka kepada AjiraBromo
+            Banyak pelanggan telah mempercayakan perjalanan Bromo mereka kepada AjiraBromo
           </p>
         </div>
 

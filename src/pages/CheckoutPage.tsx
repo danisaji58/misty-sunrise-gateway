@@ -9,15 +9,7 @@ import { PageHeaderBanner } from '@/components/PageHeaderBanner';
 import { useCart } from '@/context/CartContext';
 import { formatPrice, openWhatsApp } from '@/utils/whatsapp';
 import { CheckoutForm } from '@/types';
-import { 
-  User, 
-  Calendar, 
-  Users, 
-  Globe, 
-  Briefcase,
-  MessageCircle,
-  Trash2
-} from 'lucide-react';
+import { User,Calendar,Users,Globe,Briefcase,MessageCircle,Trash2} from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const CheckoutPage = () => {
@@ -27,6 +19,7 @@ const CheckoutPage = () => {
     name: '',
     tripType: 'pribadi',
     nationality: 'WNI',
+    ticketStatus: 'Ada',
     date: '',
     participants: 1,
     notes: '',
@@ -98,7 +91,7 @@ const CheckoutPage = () => {
       <PageHeaderBanner
         title="Checkout"
         subtitle="Lengkapi data pemesanan dan kirim pesanan via WhatsApp"
-        image="/images/hero-bromo.jpg"
+       image='images/hero-bromo'
       />
 
       <section className="py-12">
@@ -206,6 +199,46 @@ const CheckoutPage = () => {
                       </div>
                     </div>
 
+                     {/* Status Tiket */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      🎟️ Status Tiket
+                    </label>
+
+                    <div className="flex gap-4">
+                      {[
+                        { value: 'sudah', label: 'Sudah Ada Tiket' },
+                        { value: 'belum', label: 'Belum Ada Tiket' },
+                      ].map((option) => (
+                        <label
+                          key={option.value}
+                          className={`flex-1 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            form.ticketStatus === option.value
+                              ? 'border-primary bg-primary/5'
+                              : 'border-input hover:border-primary/50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="ticketStatus"
+                            value={option.value}
+                            checked={form.ticketStatus === option.value}
+                            onChange={(e) =>
+                              setForm({
+                                ...form,
+                                ticketStatus: e.target.value as 'Ada' | 'Tidak Ada',
+                              })
+                            }
+                            className="sr-only"
+                          />
+
+                          <span className="font-medium">{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+
                     {/* Date */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium flex items-center gap-2">
@@ -240,7 +273,7 @@ const CheckoutPage = () => {
                           })
                         }
                         min={1}
-                        max={50}
+                        max={null}
                         className="w-full h-12 px-4 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       />
                     </div>

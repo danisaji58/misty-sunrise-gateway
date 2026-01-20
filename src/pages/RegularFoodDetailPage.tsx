@@ -9,7 +9,7 @@ import { formatPrice } from '@/utils/whatsapp';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { getPackageById } from '@/data/packages';
-import { bannerMakan, snackBox, fullMeal, picnicBreakfast } from '@/assets/images';
+import { bannerMakan, snackBox, fullMeal, } from '@/assets/images';
 
 // Regular food menu items (simpler than picnic)
 const regularFoodMenus: Record<string, Array<{
@@ -22,55 +22,442 @@ const regularFoodMenus: Record<string, Array<{
 }>> = {
   'snack-box': [
     {
-      id: 'snack-1',
-      name: 'Snack Box A',
-      description: 'Roti, gorengan, dan minuman',
-      menuItems: ['Roti isi coklat/keju', 'Pisang goreng (2 pcs)', 'Gorengan campur', 'Air mineral 600ml'],
-      pricePerPax: 25000,
+      id: 'snack-1', // tetap
+      name: 'Coffee Break Opsi 1',
+      description: '2 kue pilihan + teh & kopi.',
+      menuItems: [
+        '2 kue pilihan',
+        'Teh',
+        'Kopi',
+      ],
+      pricePerPax: 15000,
       image: snackBox,
     },
     {
-      id: 'snack-2',
-      name: 'Snack Box B',
-      description: 'Snack ringan untuk perjalanan',
-      menuItems: ['Roti sandwich', 'Kue kering', 'Buah potong', 'Teh kotak'],
-      pricePerPax: 30000,
+      id: 'snack-2', // tetap
+      name: 'Coffee Break Opsi 2',
+      description: '2 kue pilihan + pokak & kopi.',
+      menuItems: [
+        '2 kue pilihan',
+        'Pokak',
+        'Kopi',
+      ],
+      pricePerPax: 15000,
       image: snackBox,
     },
     {
-      id: 'snack-3',
-      name: 'Snack Box Premium',
-      description: 'Snack premium dengan variasi lengkap',
-      menuItems: ['Croissant isi', 'Lemper ayam (2 pcs)', 'Pudding', 'Jus buah'],
-      pricePerPax: 40000,
+      id: 'snack-3', // tetap
+      name: 'Coffee Break Opsi 3',
+      description: '3 kue pilihan + teh & kopi.',
+      menuItems: [
+        '3 kue pilihan',
+        'Teh',
+        'Kopi',
+      ],
+      pricePerPax: 20000,
       image: snackBox,
     },
+    {
+      id: 'snack-4',
+      name: 'Coffee Break Opsi 4',
+      description: '3 kue pilihan + pokak & kopi.',
+      menuItems: [
+        '3 kue pilihan',
+        'Pokak',
+        'Kopi',
+      ],
+      pricePerPax: 20000,
+      image: snackBox,
+    },
+    {
+      id: 'snack-5',
+      name: 'Coffee Break Opsi 5',
+      description: 'Polo pendem + teh & kopi.',
+      menuItems: [
+        'Polo pendem',
+        'Teh',
+        'Kopi',
+      ],
+      pricePerPax: 15000,
+      image: snackBox,
+    },
+
+
   ],
   'makan-lengkap': [
     {
-      id: 'meal-1',
-      name: 'Paket Sarapan',
-      description: 'Menu sarapan lengkap',
-      menuItems: ['Nasi goreng spesial', 'Telur mata sapi', 'Kerupuk', 'Teh/kopi hangat'],
-      pricePerPax: 35000,
-      image: picnicBreakfast,
-    },
-    {
-      id: 'meal-2',
-      name: 'Paket Makan Siang',
-      description: 'Menu makan siang bergizi',
-      menuItems: ['Nasi putih', 'Ayam goreng', 'Sayur asem', 'Sambal', 'Es teh'],
-      pricePerPax: 40000,
-      image: fullMeal,
-    },
-    {
-      id: 'meal-3',
-      name: 'Paket Full Day',
-      description: 'Breakfast + Lunch + Snack',
-      menuItems: ['Breakfast set', 'Lunch box lengkap', 'Snack box', 'Air mineral 3 botol', 'Teh/kopi hangat'],
-      pricePerPax: 85000,
-      image: fullMeal,
-    },
+  id: 'akasia-a',
+  name: 'Paket Akasia A (Soto)',
+  description: 'Paket makan piknik Akasia A',
+  menuItems: [
+    'Nasi putih',
+    'Ayam suir',
+    'Telur 1/2',
+    'Bihun + touge + kentang kering',
+    'Kerupuk + sambal + koya + seledri',
+    'Air mineral',
+    'Teh / es teh'
+  ],
+  pricePerPax: 35000,
+  image: fullMeal,
+},
+{
+  id: 'akasia-b',
+  name: 'Paket Akasia B',
+  description: 'Paket makan piknik Akasia B',
+  menuItems: [
+    'Nasi putih',
+    'Ayam kare',
+    'Mie goreng',
+    'Bakwan jagung',
+    'Orek tempe',
+    'Timun + sambal + kerupuk',
+    'Air mineral',
+    'Teh / es teh'
+  ],
+  pricePerPax: 40000,
+  image: fullMeal,
+},
+{
+  id: 'akasia-c',
+  name: 'Paket Akasia C',
+  description: 'Paket makan piknik Akasia C',
+  menuItems: [
+    'Nasi putih',
+    'Ayam kare',
+    'Mie goreng',
+    'Bakwan jagung',
+    'Orek tempe',
+    'Telur bali',
+    'Timun',
+    'Sambal basah / kering',
+    'Kerupuk',
+    'Air mineral',
+    'Teh / es teh',
+    'Kopi'
+  ],
+  pricePerPax: 55000,
+  image: fullMeal,
+},
+{
+  id: 'bromo-a',
+  name: 'Paket Bromo A',
+  description: 'Paket makan kotakan Bromo A',
+  menuItems: [
+    'Nasi putih',
+    'Ayam goreng / ukep / kecap / bakar',
+    'Bihun / mie goreng',
+    'Kentang kering / cah sayur',
+    'Timun + sambal',
+    'Air mineral'
+  ],
+  pricePerPax: 20000,
+  image: fullMeal,
+},
+{
+  id: 'bromo-b',
+  name: 'Paket Bromo B',
+  description: 'Paket makan kotakan Bromo B',
+  menuItems: [
+    'Nasi putih',
+    'Ayam kare',
+    'Urap-urap',
+    'Tempe bacem'
+  ],
+  pricePerPax: 20000,
+  image: fullMeal,
+},
+{
+  id: 'tengger-a',
+  name: 'Paket Tengger A',
+  description: 'Paket makan kotakan Tengger A',
+  menuItems: [
+    'Nasi putih',
+    'Ayam suwir bumbu merah / ayam filet / ayam goreng telur',
+    'Capcay',
+    'Perkedel',
+    'Sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 25000,
+  image: fullMeal,
+},
+{
+  id: 'tengger-b',
+  name: 'Paket Tengger B',
+  description: 'Paket makan kotakan Tengger B',
+  menuItems: [
+    'Nasi putih',
+    'Ayam goreng telur / ayam filet krispi',
+    'Krengsengan tahu ati / sambal goreng kentang basah / tumis wortel buncis',
+    '1/2 telur asin / telur mata sapi',
+    'Timun + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 25000,
+  image: fullMeal,
+},
+{
+  id: 'tengger-c',
+  name: 'Paket Tengger C',
+  description: 'Paket makan kotakan Tengger C',
+  menuItems: [
+    'Nasi putih',
+    'Udang balado',
+    'Tahu & tempe bacem',
+    'Cah sayur',
+    'Timun + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 25000,
+  image: fullMeal,
+},
+{
+  id: 'tengger-d',
+  name: 'Paket Tengger D',
+  description: 'Paket makan kotakan Tengger D',
+  menuItems: [
+    'Nasi putih',
+    'Ayam panggang / kare',
+    'Urap-urap',
+    'Tahu & tempe bacem',
+    'Timun + sambal + rempeyek',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 25000,
+  image: fullMeal,
+},
+{
+  id: 'semeru-a',
+  name: 'Paket Semeru A',
+  description: 'Paket makan Semeru A',
+  menuItems: [
+    'Nasi putih',
+    'Sayur & pecel',
+    'Tempe goreng',
+    'Ayam goreng potong / daging sapi',
+    'Telur mata sapi',
+    'Timun + sambal + rempeyek',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 30000,
+  image: fullMeal,
+},
+{
+  id: 'semeru-b',
+  name: 'Paket Semeru B',
+  description: 'Paket makan Semeru B',
+  menuItems: [
+    'Nasi putih',
+    'Gurami asam manis',
+    '1/2 telur asin',
+    'Bihun goreng',
+    'Timun + sambal + selada',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 30000,
+  image: fullMeal,
+},
+{
+  id: 'semeru-c',
+  name: 'Paket Semeru C',
+  description: 'Paket makan Semeru C',
+  menuItems: [
+    'Nasi putih',
+    'Cumi asam manis / sate komo',
+    'Kentang kering',
+    'Sospen lada hitam',
+    'Tempe goreng',
+    'Sambal + kerupuk',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 30000,
+  image: fullMeal,
+},
+{
+  id: 'jawa-1a',
+  name: 'Paket Jawa 1A',
+  description: 'Paket prasmanan Jawa 1A',
+  menuItems: [
+    'Nasi putih',
+    'Sayur asem Jakarta',
+    'Dadar jagung',
+    'Pepes',
+    'Ayam goreng',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 27500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-2b',
+  name: 'Paket Jawa 2B (Best Seller)',
+  description: 'Paket prasmanan Jawa 2B',
+  menuItems: [
+    'Nasi putih',
+    'Pecel Tengger',
+    'Ayam goreng / sate komo',
+    'Tempe mendoan',
+    'Telur dadar / telur asin',
+    'Rempeyek + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 32500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-4',
+  name: 'Paket Jawa 4',
+  description: 'Paket prasmanan Jawa 4',
+  menuItems: [
+    'Nasi putih',
+    'Nasi goreng',
+    'Gule',
+    'Sate',
+    'Acar',
+    'Tanghun / mie',
+    'Rolade',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 42500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-1b',
+  name: 'Paket Jawa 1B',
+  description: 'Paket prasmanan Jawa 1B',
+  menuItems: [
+    'Nasi putih',
+    'Sayur asem Jakarta',
+    'Ayam goreng',
+    'Pepes',
+    'Ikan asin crispy',
+    'Dadar jagung',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 27500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-2a',
+  name: 'Paket Jawa 2A',
+  description: 'Paket prasmanan Jawa 2A',
+  menuItems: [
+    'Nasi putih',
+    'Pecel Tengger',
+    'Ayam goreng',
+    'Tempe mendoan',
+    'Telur dadar / telur asin',
+    'Rempeyek + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 32500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-2c',
+  name: 'Paket Jawa 2C',
+  description: 'Paket prasmanan Jawa 2C',
+  menuItems: [
+    'Nasi putih',
+    'Ayam goreng selimut telur',
+    'Capcay / soup sehat',
+    'Telur puyuh / pentol / sosis',
+    'Tanghun',
+    'Rolade',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 32500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-3a',
+  name: 'Paket Jawa 3A',
+  description: 'Paket prasmanan Jawa 3A',
+  menuItems: [
+    'Nasi putih',
+    'Sayur asem',
+    'Lodeh manis',
+    'Ayam bakar / sate',
+    'Sate telur puyuh bacem',
+    'Cah kangkung udang mungil',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 37500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-3b',
+  name: 'Paket Jawa 3B',
+  description: 'Paket prasmanan Jawa 3B',
+  menuItems: [
+    'Nasi putih',
+    'Sate komo / ayam bakar',
+    'Soup',
+    'Bakso',
+    'Udang crispy',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 37500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-3c',
+  name: 'Paket Jawa 3C',
+  description: 'Paket prasmanan Jawa 3C',
+  menuItems: [
+    'Nasi putih',
+    'Rawon / soto ayam',
+    'Tempe goreng',
+    'Telur asin',
+    'Empal daging',
+    'Kecambah',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 37500,
+  image: fullMeal,
+},
+{
+  id: 'jawa-3d',
+  name: 'Paket Jawa 3D',
+  description: 'Paket prasmanan Jawa 3D',
+  menuItems: [
+    'Nasi putih',
+    'Soup',
+    'Sate ayam',
+    'Udang crispy',
+    'Tanghun',
+    'Kerupuk + sambal',
+    'Buah',
+    'Air mineral'
+  ],
+  pricePerPax: 37500,
+  image: fullMeal,
+},
+
   ],
 };
 
@@ -188,11 +575,7 @@ const RegularFoodDetailPage = () => {
               
               {/* Menu Selection */}
               <section>
-                <h2 className="text-xl font-bold mb-2">Pilih Menu</h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Anda dapat memilih lebih dari satu paket menu
-                </p>
-                
+                <h2 className="text-xl font-bold mb-2">Pilih Menu</h2>                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {menus.map(menu => {
                     const isSelected = selectedMenus.has(menu.id);

@@ -335,17 +335,10 @@ const PackageDetailPage = () => {
                     <div className="space-y-3 mt-4">
                       <Button
                         className="w-full"
-                        variant="outline"
+                        variant="sunrise"
                         onClick={handleAddToCart}
                       >
-                        Tambah ke Keranjang
-                      </Button>
-                      <Button
-                        className="w-full"
-                        variant="sunrise"
-                        onClick={handleCheckout}
-                      >
-                        Checkout Sekarang
+                         Tambah ke Keranjang
                       </Button>
                     </div>
                   </CardContent>

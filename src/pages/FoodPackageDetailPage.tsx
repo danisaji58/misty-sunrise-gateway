@@ -163,11 +163,7 @@ const FoodPackageDetailPage = () => {
 
               {/* Menu Package Selection */}
               <section>
-                <h2 className="text-xl font-bold mb-2">Pilih Menu Paket</h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Anda dapat memilih lebih dari satu paket menu
-                </p>
-                
+                <h2 className="text-xl font-bold mb-2">Pilih Menu Paket Anda</h2>                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {currentTier?.packages.map(pkg => {
                     const isSelected = selectedPackages.has(pkg.id);

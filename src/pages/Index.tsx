@@ -7,6 +7,8 @@ import { Testimonials } from '@/components/Testimonials';
 import { Footer } from '@/components/Footer';
 import { CartSidebar } from '@/components/CartSidebar';
 
+
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">

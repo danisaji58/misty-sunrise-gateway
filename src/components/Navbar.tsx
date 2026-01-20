@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
+import  Logo  from '@/assets/logo.png';
 
 const navItems = [
   { name: 'Paket Jeep', href: '/packages/jeep' },
@@ -38,9 +39,15 @@ export const Navbar = () => {
           : 'bg-transparent py-4'
       )}
     >
-      <div className="container mx-auto flex items-center justify-between">
+          <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl">🌄</span>
+          {/* LOGO IMAGE */}
+          <img
+            src={Logo}
+            alt="AjiraBromo Logo"
+            className="h-12 w-13 object-contain"
+          />
+
           <span
             className={cn(
               'text-xl font-display font-bold transition-colors',
@@ -101,6 +108,7 @@ export const Navbar = () => {
           </Button>
         </div>
       </div>
+
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (

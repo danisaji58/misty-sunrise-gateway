@@ -21,7 +21,7 @@ export const Footer = () => {
               size="xl"
               variant="sunrise"
               className="gap-2"
-              onClick={() => window.open('https://wa.me/6281234567890?text=Halo, saya tertarik dengan paket AjiraBromo!', '_blank')}
+              onClick={() => window.open('https://wa.me/6288802216167?text=Halo, saya tertarik dengan paket AjiraBromo!', '_blank')}
             >
               <MessageCircle className="h-5 w-5" />
               Chat WhatsApp
@@ -79,25 +79,6 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Info */}
-          <div>
-            <h4 className="font-semibold mb-4">Informasi</h4>
-            <ul className="space-y-2">
-              {[
-                'Cara Pemesanan',
-                'Syarat & Ketentuan',
-                'Kebijakan Privasi',
-                'FAQ',
-              ].map((item) => (
-                <li key={item}>
-                  <span className="text-sm text-background/60 hover:text-background transition-colors cursor-pointer">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Contact */}
           <div>
             <h4 className="font-semibold mb-4">Kontak</h4>
@@ -105,19 +86,19 @@ export const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                 <span className="text-sm text-background/60">
-                  Cemoro Lawang, Bromo, Probolinggo, Jawa Timur
+                 Sukapura, Bromo, Probolinggo, Jawa Timur
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-sm text-background/60">
-                  +62 812-3456-7890
+                  +62 88802216167
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-sm text-background/60">
-                  hello@ajirabromo.id
+                  AjiraBromo@gmail.com
                 </span>
               </li>
             </ul>

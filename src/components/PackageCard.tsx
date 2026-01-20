@@ -90,15 +90,12 @@ export const PackageCard = ({ pkg }: PackageCardProps) => {
 
         <CardFooter className="flex items-center justify-between border-t border-border/50 pt-4">
           <div>
-            <span className="text-xs text-muted-foreground">Mulai dari</span>
+            <span className="text-xs text-muted-foreground"></span>
             <p className="text-lg font-bold text-primary">
               {formatPrice(pkg.price)}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleAddToCart} className="gap-1">
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
             <Button size="sm" className="gap-1">
               Detail
               <ArrowRight className="h-4 w-4" />

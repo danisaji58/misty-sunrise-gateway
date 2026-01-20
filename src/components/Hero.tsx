@@ -24,7 +24,7 @@ export const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto animate-fade-up">
-          <span className="inline-block px-4 py-2 rounded-full bg-primary-foreground/10 backdrop-blur-sm text-primary-foreground text-sm font-medium mb-6">
+          <span className="inline-block px-4 py-2 rounded-full bg-primary-foreground/10 backdrop-blur-sm text-primary-foreground text-sm font-medium mb-6 animate-pulse">
             🌄 Jelajahi Keajaiban Bromo
           </span>
           
@@ -68,14 +68,6 @@ export const Hero = () => {
             ))}
           </div>
         </div>
-
-        {/* Scroll Indicator */}
-        <button
-          onClick={scrollToCategories}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-primary-foreground/60 hover:text-primary-foreground transition-colors animate-float"
-        >
-          <ChevronDown className="h-8 w-8" />
-        </button>
       </div>
     </section>
   );
