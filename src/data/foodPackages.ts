@@ -1,6 +1,6 @@
       // gambar per menu
 //economy 
-import Bakso from '@/assets/food/menu-economy-1-Bakso.jpg'
+import Bakso from '@/assets/food/menu-economy-1-bakso.jpg'
 import soto from '@/assets/food/menu-economy-1-soto.jpg'
 import nasgor from '@/assets/food/menu-economy-1-nasgor.jpg'
 //standar
