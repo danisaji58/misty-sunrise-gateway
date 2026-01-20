@@ -1,6 +1,6 @@
       // gambar per menu
 //economy 
-import Bakso from '@/assets/food/menu-economy-1-bakso.jpg'
+import bakso from '@/assets/food/menu-economy-1-bakso.jpg'
 import soto from '@/assets/food/menu-economy-1-soto.jpg'
 import nasgor from '@/assets/food/menu-economy-1-nasgor.jpg'
 //standar
@@ -81,7 +81,7 @@ export const menuTiers: MenuTier[] = [
           'Air mineral',
         ],
         pricePerPax: 35000,
-        image: Bakso,
+        image: bakso,
       },
       {
         id: 'economy-2',
